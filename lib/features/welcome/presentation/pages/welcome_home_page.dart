@@ -95,12 +95,40 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0),
       child: SizedBox(
-        height: WelcomeConstants.avatarRadius * 2 + WelcomeConstants.gradientLineHeight * 2,
+        height: WelcomeConstants.avatarRadius * 2 + 16 + 15, // 80 + 10(top) + 5(bottom)
         child: Stack(
           fit: StackFit.expand,
           children: [
+            // Fundo preenchendo toda a área entre as linhas
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color(0xFF333333),
+                    Color(0xFF434343),
+                    Color(0xFF333333),
+                  ],
+                ),
+              ),
+            ),
             _buildGradientLine(Alignment.topCenter),
-            _buildAvatarContainer(),
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                height: WelcomeConstants.avatarRadius * 2 + 16, // 80
+                margin: const EdgeInsets.only(bottom: 0), // Remover o espaço extra
+                color: Colors.transparent, // Garantir que não sobrescreva o fundo
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  itemCount: WelcomeConstants.avatarUrls.length,
+                  itemBuilder: (context, index) => _buildAvatarItem(index),
+                ),
+              ),
+            ),
             _buildGradientLine(Alignment.bottomCenter),
           ],
         ),
@@ -112,7 +140,7 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
     return Align(
       alignment: alignment,
       child: Container(
-        height: WelcomeConstants.gradientLineHeight,
+        height: 2, // Espessura reduzida para 2px
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.centerLeft,
@@ -125,30 +153,7 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
   }
 
   Widget _buildAvatarContainer() {
-    return Align(
-      alignment: Alignment.center,
-      child: Container(
-        height: WelcomeConstants.avatarRadius * 2 + 16, // 80
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              Color(0xFF333333),
-              Color(0xFF434343),
-              Color(0xFF333333),
-            ],
-          ),
-        ),
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          itemCount: WelcomeConstants.avatarUrls.length,
-          itemBuilder: (context, index) => _buildAvatarItem(index),
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildAvatarItem(int index) {
@@ -170,8 +175,40 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        _buildTabGradientLine(),
-        _buildTabButtons(),
+        // Linha gradiente inferior colada nas tabs
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: _buildTabGradientLine(),
+        ),
+        // As tabs
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8), // Igual ao card
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  for (int i = 0; i < 3; i++)
+                    Expanded(
+                      flex: i == 1 ? 6 : 4,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          top: i == 1 ? 22 : 10,
+                          bottom: 0,
+                          left: i == 0 ? 8 : 3,
+                          right: i == 2 ? 8 : 3,
+                        ),
+                        child: _buildTabButton(i),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -244,7 +281,7 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
             style: TextStyle(
               color: isSelected ? const Color(0xFF232323) : Colors.white,
               fontWeight: FontWeight.bold,
-              fontSize: index == 1 ? 15 : 16,
+              fontSize: index == 1 ? 20 : 16, // INTELLIMEN maior
               letterSpacing: 2,
             ),
           ),
@@ -263,12 +300,12 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
 
   Widget _buildContentCard() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
+      padding: const EdgeInsets.fromLTRB(16, 3, 16, 1), // 5px em cima (3+2), 1px embaixo
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           color: const Color(0x80333333), // #333333 com 50% de opacidade
-          border: Border.all(color: const Color(0xFFFFA726), width: 1),
+          border: Border.all(color: const Color(0xFF546E7A), width: 1),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(0),
             topRight: Radius.circular(0),
