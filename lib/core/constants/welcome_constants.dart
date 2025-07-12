@@ -124,6 +124,13 @@ class WelcomeConstants {
     letterSpacing: 1.2,
   );
 
+  static const TextStyle bannerSubtitleStyle = TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.w400,
+    fontSize: 14,
+    letterSpacing: 0.8,
+  );
+
   static const TextStyle tabTextStyle = TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: 16,
@@ -143,5 +150,10 @@ class WelcomeConstants {
     'https://randomuser.me/api/portraits/men/3.jpg',
     'https://randomuser.me/api/portraits/men/4.jpg',
     'https://randomuser.me/api/portraits/men/5.jpg',
+    'https://randomuser.me/api/portraits/men/6.jpg',
+    'https://randomuser.me/api/portraits/men/7.jpg',
+    'https://randomuser.me/api/portraits/men/8.jpg',
+    'https://randomuser.me/api/portraits/men/9.jpg',
+    'https://randomuser.me/api/portraits/men/10.jpg',
   ];
 } 
