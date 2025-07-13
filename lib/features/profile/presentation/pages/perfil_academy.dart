@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intellimen/features/welcome/presentation/pages/welcome_home_page.dart';
 import 'package:intellimen/core/constants/welcome_constants.dart';
-import 'package:intellimen/features/profile/presentation/pages/perfil_academy.dart';
-import 'package:intellimen/features/profile/presentation/pages/perfil_campus.dart';
 
 // Modelo simples para desafio
 class Desafio {
@@ -46,8 +44,41 @@ final List<Desafio> desafios = List.generate(10, (i) => Desafio(
   concluido2: i % 2 != 0,
 ));
 
-class PerfilIntellimenPage extends StatelessWidget {
-  const PerfilIntellimenPage({Key? key}) : super(key: key);
+// Modelo simples para quiz
+class QuizConfronto {
+  final String titulo;
+  final String nome1;
+  final String url1;
+  final int pontos1;
+  final int total;
+  final String nome2;
+  final String url2;
+  final int pontos2;
+  QuizConfronto({
+    required this.titulo,
+    required this.nome1,
+    required this.url1,
+    required this.pontos1,
+    required this.total,
+    required this.nome2,
+    required this.url2,
+    required this.pontos2,
+  });
+}
+
+final List<QuizConfronto> quizzes = List.generate(5, (i) => QuizConfronto(
+  titulo: 'BIBLE QUIZ',
+  nome1: 'Juan Lucas',
+  url1: 'https://randomuser.me/api/portraits/men/13.jpg',
+  pontos1: 5 + i,
+  total: 23,
+  nome2: 'Mateus Mello',
+  url2: 'https://randomuser.me/api/portraits/men/14.jpg',
+  pontos2: 4 + i,
+));
+
+class PerfilAcademyPage extends StatelessWidget {
+  const PerfilAcademyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +109,11 @@ class PerfilIntellimenPage extends StatelessWidget {
                 const SizedBox(height: 24),
                 _buildDesafiosCarrossel(context),
                 const SizedBox(height: 24),
+                _buildReflexaoCard(),
+                const SizedBox(height: 24),
                 _buildAddButton(),
                 const SizedBox(height: 24),
-                _buildReflexaoCard(),
+                _buildQuizCarrossel(context),
                 const SizedBox(height: 100), // espaço extra para bottom nav bar
               ],
             ),
@@ -106,7 +139,7 @@ class PerfilIntellimenPage extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: Image.asset('assets/logos/logo-intellimen-square.png', height: 60),
+            child: Image.asset('assets/logos/logo-academy.png', height: 80),
           ),
           GestureDetector(
             onTap: () {
@@ -121,7 +154,7 @@ class PerfilIntellimenPage extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.menu, color: Colors.white, size: 32),
@@ -146,7 +179,7 @@ class PerfilIntellimenPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.10),
+                color: Colors.black.withValues(alpha: 0.10),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
@@ -169,7 +202,7 @@ class PerfilIntellimenPage extends StatelessWidget {
                   const SizedBox(width: 8),
                   Icon(
                     Icons.verified_rounded,
-                    color: Color(0xFF1976D2), // azul verificado
+                    color: Color(0xFFE65100), // laranja escuro
                     size: 28,
                   ),
                 ],
@@ -202,11 +235,20 @@ class PerfilIntellimenPage extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0A3D91),
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFFEF6C00), // laranja claro
+                            Color(0xFFE65100), // laranja escuro
+                            Color(0xFFFF3D00), // laranja profundo
+                            Color(0xFFDD2C00), // marrom vermelho
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.25),
+                            color: Colors.black.withValues(alpha: 0.25),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -248,9 +290,10 @@ class PerfilIntellimenPage extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [
-                    Color(0xFF002BC4),
-                    Color(0xFF0088FF),
-                    Color(0xFF002BC4),
+                    Color(0xFFEF6C00), // laranja claro
+                    Color(0xFFE65100), // laranja escuro
+                    Color(0xFFFF3D00), // laranja profundo
+                    Color(0xFFDD2C00), // marrom vermelho
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -337,7 +380,7 @@ class PerfilIntellimenPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withValues(alpha: 0.12),
             blurRadius: 18,
             offset: Offset(0, 8),
           ),
@@ -394,9 +437,19 @@ class PerfilIntellimenPage extends StatelessWidget {
     return Column(
       children: [
         Container(
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.all(3),
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Color(0xFF002BC4), width: 2),
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFEF6C00), // laranja claro
+                Color(0xFFE65100), // laranja escuro
+                Color(0xFFFF3D00), // laranja profundo
+                Color(0xFFDD2C00), // marrom vermelho
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
           child: CircleAvatar(
             backgroundImage: NetworkImage(url),
@@ -448,6 +501,194 @@ class PerfilIntellimenPage extends StatelessWidget {
     );
   }
 
+  Widget _buildQuizCarrossel(BuildContext context) {
+    return SizedBox(
+      height: 320,
+      child: PageView.builder(
+        itemCount: quizzes.length,
+        controller: PageController(viewportFraction: 0.92),
+        itemBuilder: (context, index) {
+          final quiz = quizzes[index];
+          return _buildQuizCard(
+            context,
+            titulo: quiz.titulo,
+            nome1: quiz.nome1,
+            url1: quiz.url1,
+            pontos1: quiz.pontos1,
+            total: quiz.total,
+            nome2: quiz.nome2,
+            url2: quiz.url2,
+            pontos2: quiz.pontos2,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildQuizCard(
+    BuildContext context, {
+    required String titulo,
+    required String nome1,
+    required String url1,
+    required int pontos1,
+    required int total,
+    required String nome2,
+    required String url2,
+    required int pontos2,
+  }) {
+    final bool user1NaFrente = pontos1 > pontos2;
+    final bool empate = pontos1 == pontos2;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEE0E0E0),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF0A3D91), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Text(
+            'BIBLE QUIZ',
+            style: TextStyle(
+              fontFamily: 'RobotoMono',
+              fontWeight: FontWeight.w900,
+              fontSize: 26,
+              letterSpacing: 2,
+              color: Color(0xFF232323),
+            ),
+          ),
+          const SizedBox(height: 2),
+          const Text(
+            'CONFRONTO DIRETO',
+            style: TextStyle(
+              fontSize: 15,
+              color: Color(0xFF232323),
+              letterSpacing: 1.1,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(child: _buildQuizPerfil(
+                nome: nome1,
+                url: url1,
+                pontos: pontos1,
+                total: total,
+                cor: Colors.green,
+              )),
+              Container(
+                width: 2,
+                height: 80,
+                color: Colors.grey[300],
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              Expanded(child: _buildQuizPerfil(
+                nome: nome2,
+                url: url2,
+                pontos: pontos2,
+                total: total,
+                cor: Colors.red,
+              )),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!empate)
+                Text(
+                  user1NaFrente
+                      ? '@${nome1.toLowerCase().replaceAll(' ', '')} está na frente'
+                      : '@${nome2.toLowerCase().replaceAll(' ', '')} está na frente',
+                  style: const TextStyle(
+                    color: Color(0xFFFF8800),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    letterSpacing: 1.1,
+                  ),
+                )
+              else
+                const Text(
+                  'Empate!'
+                  ,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuizPerfil({
+    required String nome,
+    required String url,
+    required int pontos,
+    required int total,
+    required Color cor,
+  }) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(3),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFEF6C00), // laranja claro
+                Color(0xFFE65100), // laranja escuro
+                Color(0xFFFF3D00), // laranja profundo
+                Color(0xFFDD2C00), // marrom vermelho
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(url),
+            radius: 32,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          nome,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: LinearProgressIndicator(
+            value: pontos / total,
+            backgroundColor: Colors.grey[200],
+            color: cor,
+            minHeight: 20,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          '$pontos de $total',
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
   Widget _buildAddButton() {
     return Builder(
       builder: (context) => GestureDetector(
@@ -466,7 +707,7 @@ class PerfilIntellimenPage extends StatelessWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.10),
+                color: Colors.black.withValues(alpha: 0.10),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -491,7 +732,7 @@ class PerfilIntellimenPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withValues(alpha: 0.12),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -532,12 +773,13 @@ class PerfilIntellimenPage extends StatelessWidget {
                     height: 44,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF002BC4),
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(22),
                         ),
-                        elevation: 6,
+                        elevation: 0,
                       ),
                       onPressed: () {
                         showDialog(
@@ -560,12 +802,31 @@ class PerfilIntellimenPage extends StatelessWidget {
                           ),
                         );
                       },
-                      child: const Text(
-                        'LEIA MAIS',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          letterSpacing: 1.2,
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Color(0xFFEF6C00), // laranja claro
+                              Color(0xFFE65100), // laranja escuro
+                              Color(0xFFFF3D00), // laranja profundo
+                              Color(0xFFDD2C00), // marrom vermelho
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: const Text(
+                            'LEIA MAIS',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              letterSpacing: 1.2,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -593,18 +854,6 @@ class PerfilIntellimenPage extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Excluir reflexão (em breve)')),
                     );
-                  } else if (value == 'Academy') {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PerfilAcademyPage(),
-                      ),
-                    );
-                  } else if (value == 'Campus') {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PerfilCampusPage(),
-                      ),
-                    );
                   }
                 },
                 itemBuilder: (context) => [
@@ -615,14 +864,6 @@ class PerfilIntellimenPage extends StatelessWidget {
                   const PopupMenuItem(
                     value: 'Excluir',
                     child: Text('Excluir'),
-                  ),
-                  const PopupMenuItem(
-                    value: 'Academy',
-                    child: Text('Academy'),
-                  ),
-                  const PopupMenuItem(
-                    value: 'Campus',
-                    child: Text('Campus'),
                   ),
                 ],
               ),
@@ -640,7 +881,7 @@ class PerfilIntellimenPage extends StatelessWidget {
         color: Colors.black,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),

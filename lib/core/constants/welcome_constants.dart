@@ -34,7 +34,7 @@ class WelcomeConstants {
     },
     {
       'title': 'O que é o Campus?',
-      'desc': 'O Campus é o espaço para jovens entre 17 e 25 anos que querem crescer juntos, trocar experiências e participar de atividades presenciais e online. Aqui você encontra uma comunidade vibrante, eventos, grupos de estudo e muito mais.'
+      'desc': 'Você já conhece o IntelliMen Campus? Trata-se de um projeto com a missão de forjar rapazes entre 18 e 25 anos para que tenham um espírito excelente, assim como foi com o profeta Daniel, na Bíblia.'
     },
   ];
 

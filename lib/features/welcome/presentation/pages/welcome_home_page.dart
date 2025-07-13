@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:ui';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/welcome_constants.dart';
 import 'dart:async'; // Import para Timer
 import '../../../profile/presentation/pages/perfil_intellimen.dart';
+import 'manifesto_page.dart';
 
 class WelcomeHomePage extends StatefulWidget {
   const WelcomeHomePage({super.key});
@@ -260,9 +262,7 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
     );
   }
 
-  Widget _buildAvatarContainer() {
-    return const SizedBox.shrink();
-  }
+
 
   Widget _buildAvatarItem(int index) {
     return MouseRegion(
@@ -412,7 +412,7 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
   static const String _resumoIntellimen =
       'Você já deve ter sacado que o nome do projeto é uma junção das palavras em inglês intelligent (inteligentes) e men (homens). Escolhemos esse nome porque além de soar como um super-herói, que todo homem secretamente aspira ser...';
   static const String _resumoCampus =
-      'O Campus é o espaço para jovens entre 17 e 25 anos que querem crescer juntos, trocar experiências e participar de atividades presenciais e online. Aqui você encontra uma comunidade vibrante, eventos, grupos de estudo.';
+      'Você já conhece o IntelliMen Campus? Trata-se de um projeto com a missão de forjar rapazes entre 18 e 25 anos para que tenham um espírito excelente, assim como foi com o profeta Daniel, na Bíblia.';
 
   Widget _buildContentCard() {
     return Padding(
@@ -450,18 +450,52 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
   Widget _buildContentTitleWhite() {
     final title = WelcomeConstants.tabContents[_selectedTab]['title']!;
     final isIntelliMen = _selectedTab == 1;
+    final isCampus = _selectedTab == 2;
+    final isAcademy = _selectedTab == 0;
     return Text.rich(
       TextSpan(
         children: [
-          TextSpan(
-            text: isIntelliMen ? title.split('IntelliMen')[0] : title,
-            style: WelcomeConstants.titleStyle.copyWith(color: Colors.white),
-          ),
-          if (isIntelliMen)
+          if (isAcademy)
+            ...[
+              TextSpan(
+                text: 'O que é o ',
+                style: WelcomeConstants.titleStyle.copyWith(color: Colors.white),
+              ),
+              TextSpan(
+                text: 'Academy',
+                style: WelcomeConstants.titleBoldStyle.copyWith(color: Colors.white),
+              ),
+              TextSpan(
+                text: '?',
+                style: WelcomeConstants.titleStyle.copyWith(color: Colors.white),
+              ),
+            ]
+          else if (isCampus)
+            ...[
+              TextSpan(
+                text: 'O que é o ',
+                style: WelcomeConstants.titleStyle.copyWith(color: Colors.white),
+              ),
+              TextSpan(
+                text: 'Campus',
+                style: WelcomeConstants.titleBoldStyle.copyWith(color: Colors.white),
+              ),
+              TextSpan(
+                text: '?',
+                style: WelcomeConstants.titleStyle.copyWith(color: Colors.white),
+              ),
+            ]
+          else ...[
             TextSpan(
-              text: 'IntelliMen',
-              style: WelcomeConstants.titleBoldStyle.copyWith(color: Colors.white),
+              text: isIntelliMen ? title.split('IntelliMen')[0] : title,
+              style: WelcomeConstants.titleStyle.copyWith(color: Colors.white),
             ),
+            if (isIntelliMen)
+              TextSpan(
+                text: 'IntelliMen',
+                style: WelcomeConstants.titleBoldStyle.copyWith(color: Colors.white),
+              ),
+          ],
         ],
       ),
       textAlign: TextAlign.center,
@@ -581,7 +615,7 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(WelcomeConstants.bannerBorderRadius),
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withValues(alpha: 0.5),
       ),
     );
   }
@@ -804,6 +838,8 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
     
     // Simular carregamento
     Future.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      
       setState(() {
         _isLoading = false;
       });
@@ -838,7 +874,7 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
     if (!_isLoading) return const SizedBox.shrink();
     
     return Container(
-      color: Colors.black.withOpacity(0.5),
+      color: Colors.black.withValues(alpha: 0.5),
       child: const Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -920,47 +956,220 @@ class _WelcomeHomePageState extends State<WelcomeHomePage> {
   }
 } 
 
-// Nova tela de detalhes para Academy
-class _AcademyDetailPage extends StatelessWidget {
-  const _AcademyDetailPage({Key? key}) : super(key: key);
-
-  static const String _textoCompleto =
-      'O Academy é a área de formação avançada do projeto, voltada para quem deseja se aprofundar em temas de liderança, propósito e desenvolvimento pessoal. Aqui você encontra conteúdos exclusivos, desafios especiais e acompanhamento de mentores.';
+// Widget base para detalhes com visual igual ao da tela principal
+class WelcomeDetailScaffold extends StatelessWidget {
+  final Widget child;
+  const WelcomeDetailScaffold({required this.child, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.7),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF232323),
-              borderRadius: BorderRadius.circular(24),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Image.asset(
+            WelcomeConstants.backgroundImage,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(WelcomeConstants.headerHeight),
+            child: SafeArea(
+              bottom: false,
+              child: Container(
+                color: Colors.black,
+                padding: WelcomeConstants.headerPadding,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if (Navigator.canPop(context))
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    Expanded(
+                      child: Center(
+                        child: Image.asset(
+                          WelcomeConstants.logoImage,
+                          height: WelcomeConstants.headerHeight - 20,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'O que é o Academy?',
-                  style: WelcomeConstants.titleBoldStyle.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
+          ),
+          body: Center(
+            child: child,
+          ),
+        ),
+      ],
+    );
+  }
+} 
+
+// Nova tela de detalhes para Academy
+class _AcademyDetailPage extends StatelessWidget {
+  const _AcademyDetailPage({super.key});
+
+  static const String _textoCompleto =
+      'O IntelliMen Academy é uma extensão do projeto IntelliMen, voltado para garotos de 9 a 14 anos.\n\nO objetivo do grupo é desenvolver nesses garotos um caráter íntegro e determinado através do ensinamento da Palavra de Deus e de atividades práticas, buscando formar homens exemplares em uma sociedade que tem corrompido os valores masculinos.\n\nO curso está dividido em duas fases: ALPHA e BETA, cada uma contendo sete (7) oficinas, sendo a ALPHA teórica e a BETA prática. É fundamental destacar que somente os cadetes que concluírem ambas as fases poderão se formar.\n\nAs aulas têm duração de 1 hora e 30 minutos e ocorrem às quartas-feiras, às 20h (para a faixa etária de 9 a 11 anos), e aos domingos, às 9h30 (para a faixa etária de 12 a 14 anos), no 11º andar do Templo de Salomão. É imprescindível que as turmas respeitem os horários de entrada e saída.\n\nPara a conclusão bem-sucedida do curso, os cadetes devem realizar todas as tarefas e entregá-las dentro do prazo estipulado, ser pontuais, comparecer a todas as oficinas, manter a disciplina, respeitar os demais cadetes, adotar uma postura correta e obedecer às instruções fornecidas no curso.\n\nCada turma deverá ter, no máximo, 15 cadetes. No início de cada oficina, eles receberão um resumo da aula para facilitar a revisão do conteúdo ao final do curso. Além disso, eles receberão deveres de casa, que deverão ser entregues ao instrutor na aula seguinte.';
+
+  @override
+  Widget build(BuildContext context) {
+    return WelcomeDetailScaffold(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0x66000000),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withOpacity(0.25), width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.10),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 28),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'O que é o Academy?',
+                          style: WelcomeConstants.titleBoldStyle.copyWith(
+                            color: Color(0xFFEEEEEE),
+                            fontSize: WelcomeConstants.titleBoldStyle.fontSize! + 2,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        RichText(
+                          textAlign: TextAlign.justify,
+                          text: TextSpan(
+                            style: WelcomeConstants.descriptionStyle.copyWith(
+                              color: Color(0xFFEEEEEE),
+                              fontSize: WelcomeConstants.descriptionStyle.fontSize! + 2,
+                              fontWeight: FontWeight.w400,
+                              height: 1.7,
+                              letterSpacing: 1.3,
+                            ),
+                            children: [
+                              const TextSpan(text: 'O '),
+                              const TextSpan(text: 'IntelliMen Academy', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ' é uma extensão do projeto IntelliMen, voltado para garotos de 9 a 14 anos.\n\nO objetivo do grupo é desenvolver nesses garotos um caráter íntegro e determinado através do ensinamento da Palavra de Deus e de atividades práticas, buscando formar homens exemplares em uma sociedade que tem corrompido os valores masculinos.\n\nO curso está dividido em duas fases: '),
+                              const TextSpan(text: 'ALPHA', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ' e '),
+                              const TextSpan(text: 'BETA', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ', cada uma contendo sete (7) oficinas, sendo a '),
+                              const TextSpan(text: 'ALPHA', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ' teórica e a '),
+                              const TextSpan(text: 'BETA', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ' prática. É fundamental destacar que somente os cadetes que concluírem ambas as fases poderão se formar.\n\nAs aulas têm duração de 1 hora e 30 minutos e ocorrem às '),
+                              const TextSpan(text: 'quartas-feiras, às 20h (para a faixa etária de 9 a 11 anos)', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ', e aos '),
+                              const TextSpan(text: 'domingos, às 9h30 (para a faixa etária de 12 a 14 anos)', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ', no '),
+                              const TextSpan(text: '11º andar do Templo de Salomão', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: '. É imprescindível que as turmas respeitem os horários de entrada e saída.\n\nPara a conclusão bem-sucedida do curso, os cadetes devem realizar '),
+                              const TextSpan(text: 'todas as tarefas', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ' e entregá-las dentro do prazo estipulado, ser pontuais, comparecer a '),
+                              const TextSpan(text: 'todas as oficinas', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ', manter a '),
+                              const TextSpan(text: 'disciplina', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ', respeitar os '),
+                              const TextSpan(text: 'demais cadetes', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ', adotar uma '),
+                              const TextSpan(text: 'postura correta', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ' e '),
+                              const TextSpan(text: 'obedecer às instruções', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ' fornecidas no curso.\n\nCada turma deverá ter, no máximo, '),
+                              const TextSpan(text: '15 cadetes', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: '. No início de cada oficina, eles receberão um '),
+                              const TextSpan(text: 'resumo da aula', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ' para facilitar a revisão do conteúdo ao final do curso. Além disso, eles receberão '),
+                              const TextSpan(text: 'deveres de casa', style: TextStyle(fontWeight: FontWeight.bold)),
+                              const TextSpan(text: ', que deverão ser entregues ao instrutor na aula seguinte.'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        SizedBox(
+                          width: 200,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFFFF8E44),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 6,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                                  title: const Text('Atenção'),
+                                  content: const Text(
+                                    'O IntelliMen Academy é exclusivo para crianças e adolescentes de 9 a 14 anos.\n\nOs pais ou responsáveis devem fazer o contato.\n\nSe você é pai ou responsável, clique em ENVIAR MENSAGEM para falar com o coordenador do Academy.',
+                                    textAlign: TextAlign.justify,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: const Text('Fechar'),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.black,
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Abrir formulário de contato...')),
+                                        );
+                                      },
+                                      child: const Text('ENVIAR MENSAGEM'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'QUERO PARTICIPAR',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  _textoCompleto,
-                  style: WelcomeConstants.descriptionStyle.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -971,45 +1180,182 @@ class _AcademyDetailPage extends StatelessWidget {
 
 // Nova tela de detalhes para Campus
 class _CampusDetailPage extends StatelessWidget {
-  const _CampusDetailPage({Key? key}) : super(key: key);
+  const _CampusDetailPage({super.key});
 
   static const String _textoCompleto =
-      'O Campus é o espaço para jovens entre 17 e 25 anos que querem crescer juntos, trocar experiências e participar de atividades presenciais e online. Aqui você encontra uma comunidade vibrante, eventos, grupos de estudo e muito mais. Venha fazer parte dessa jornada!';
+      'Durante a primeira edição do projeto, o grupo percorreu diversas localidades no estado da Bahia, na Região Centro-Norte, com o intuito de exercitar os aprendizados adquiridos e alcançar experiência ao longo do treinamento.\nEles passaram por lugares como a Fazenda Nova Canaã – em Irecê, no interior do estado -, um presídio, um lar para idosos, um centro de reabilitação e participaram de um curso completo de primeiros socorros, só para ilustrar.';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.7),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF232323),
+    return WelcomeDetailScaffold(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
-            ),
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'O que é o Campus?',
-                  style: WelcomeConstants.titleBoldStyle.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0x66000000),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withOpacity(0.25), width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.10),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 28),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'O IntelliMen Campus:',
+                          style: WelcomeConstants.titleBoldStyle.copyWith(
+                            color: Color(0xFFEEEEEE),
+                            fontSize: WelcomeConstants.titleBoldStyle.fontSize! + 2,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          _textoCompleto,
+                          style: WelcomeConstants.descriptionStyle.copyWith(
+                            color: Color(0xFFEEEEEE),
+                            fontSize: WelcomeConstants.descriptionStyle.fontSize! + 2,
+                            fontWeight: FontWeight.w400,
+                            height: 1.7,
+                            letterSpacing: 1.3,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                        const SizedBox(height: 32),
+                        // Card COMO PARTICIPAR
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: const Color(0x99000000),
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(color: Colors.white.withOpacity(0.18), width: 1.2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.10),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'COMO PARTICIPAR',
+                                    style: WelcomeConstants.titleBoldStyle.copyWith(
+                                      color: Color(0xFFEEEEEE),
+                                      fontSize: WelcomeConstants.titleBoldStyle.fontSize! - 2,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 2.2,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    width: 240,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(0xFFFF8E44),
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        elevation: 6,
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                      ),
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            final TextEditingController _controller = TextEditingController();
+                                            return AlertDialog(
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                                              title: const Text('Fale com o coordenador'),
+                                              content: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Text(
+                                                    'Envie sua dúvida ou mensagem para o coordenador do Campus:',
+                                                    textAlign: TextAlign.justify,
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                  TextField(
+                                                    controller: _controller,
+                                                    maxLines: 4,
+                                                    decoration: const InputDecoration(
+                                                      hintText: 'Digite sua mensagem...',
+                                                      border: OutlineInputBorder(),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.of(context).pop(),
+                                                  child: const Text('Fechar'),
+                                                ),
+                                                ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.black,
+                                                    foregroundColor: Colors.white,
+                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(content: Text('Mensagem enviada para o coordenador!')),
+                                                    );
+                                                  },
+                                                  child: const Text('ENVIAR'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: const Text(
+                                        'MAIS INFORMAÇÕES!',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          letterSpacing: 1.2,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  _textoCompleto,
-                  style: WelcomeConstants.descriptionStyle.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -1020,45 +1366,137 @@ class _CampusDetailPage extends StatelessWidget {
 
 // Nova tela de detalhes para IntelliMen
 class _IntellimenDetailPage extends StatelessWidget {
-  const _IntellimenDetailPage({Key? key}) : super(key: key);
+  const _IntellimenDetailPage({super.key});
 
   static const String _textoCompleto =
       'Você já deve ter sacado que o nome do projeto é uma junção das palavras em inglês intelligent (inteligentes) e men (homens). Escolhemos esse nome porque além de soar como um super-herói, que todo homem secretamente aspira ser desde criança, ele engloba tudo o que o projeto aspira: formar homens inteligentes e melhores em tudo. Não prometemos superpoderes como levantar ônibus com um dedo, voar ou invisibilidade — mas estamos trabalhando nisso.';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.7),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF232323),
+    return WelcomeDetailScaffold(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
-            ),
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'O que é O Intellimen?',
-                  style: WelcomeConstants.titleBoldStyle.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0x66000000),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withOpacity(0.25), width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.10),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 28),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'O que é O Intellimen?',
+                        style: WelcomeConstants.titleBoldStyle.copyWith(
+                          color: Color(0xFFEEEEEE),
+                          fontSize: WelcomeConstants.titleBoldStyle.fontSize! + 2,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        _textoCompleto,
+                        style: WelcomeConstants.descriptionStyle.copyWith(
+                          color: Color(0xFFEEEEEE),
+                          fontSize: WelcomeConstants.descriptionStyle.fontSize! + 2,
+                          fontWeight: FontWeight.w400,
+                          height: 1.7,
+                          letterSpacing: 1.3,
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                      const SizedBox(height: 32),
+                      // Novo card desafio
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(18),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: const Color(0x99000000),
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(color: Colors.white.withOpacity(0.18), width: 1.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.10),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'ACEITA O DESAFIO?',
+                                  style: WelcomeConstants.titleBoldStyle.copyWith(
+                                    color: Color(0xFFEEEEEE),
+                                    fontSize: WelcomeConstants.titleBoldStyle.fontSize! + 1,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 2.2,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 18),
+                                SizedBox(
+                                  width: 180,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 6,
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => const ManifestoPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text(
+                                      'LEIA O MANIFESTO',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  _textoCompleto,
-                  style: WelcomeConstants.descriptionStyle.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+              ),
             ),
           ),
         ),
